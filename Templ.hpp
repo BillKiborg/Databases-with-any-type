@@ -17,12 +17,7 @@ class User {
 private:
 
 	struct Base {
-		virtual ~Base() = default;	
-		template <typename Key, typename Value> void _add_data(Key key, Value val) {
-
-			std::cout << "Base add data: " << key << ": " << val << "\n";
-			static_cast<Up_Base<Key, Value>*>(this)->add_data(key, val);
-		}
+		virtual ~Base() = default;			
 	};
 
 	template <typename Key, typename Value>	struct Up_Base : public Base, public DataBase<Key, Value> {		
@@ -34,7 +29,7 @@ private:
 		}
 
 		void add_data(Key key, Value val) override {
-
+			database->add_data(key, val);
 		}
 
 	};
@@ -43,7 +38,19 @@ private:
 
 	template <typename Key, typename Value> void add_data(Key key, Value value) {
 
-		static_cast<Up_Base<Key, Value>*>(data)->add_data(key, value);
+		std::cout << (data ? "DB: Exist\n" : "DB: NotExist\n");
+		try	{
+			Up_Base<Key, Value>* ptr
+				= dynamic_cast<Up_Base<Key, Value>*>(data);
+
+			std::cout << "Type ptr: " << typeid(ptr).name() << "\n";
+
+			ptr->add_data(key, value);
+
+		}
+		catch (std::exception& exc) {
+			std::cout << exc.what() << "\n";
+		}
 	}
 
 public:
@@ -55,7 +62,7 @@ public:
 	}
 
 	void use() {
-		if (data) data->_add_data("Key1", "Value1");
+		add_data(std::string{ "Key1" }, std::string{ "Value1" });
 	}
 
 };

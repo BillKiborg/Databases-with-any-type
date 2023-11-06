@@ -1,13 +1,10 @@
 #include <iostream>
-#include <any>
-//#include <vld.h>
 #include "Templ.h"
-#include <vector>
-
+#include <any>
 
 
 int main() {
-	setlocale(LC_ALL, "rus");		
+	setlocale(LC_ALL, "rus");
 
 	User user;
 	user.set_database(new String_DataBase);
