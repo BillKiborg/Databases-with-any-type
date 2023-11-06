@@ -12,57 +12,61 @@ public:
 		std::cout << "Execute String\n";
 	}
 };
-
+//-------------------------------------------------------------------------------
 class User {
 private:
-
+	
 	struct Base {
-		virtual ~Base() = default;			
+		virtual ~Base() = default;				
+		virtual void check(Base*) = 0;
 	};
-
-	template <typename Key, typename Value>	struct Up_Base : public Base, public DataBase<Key, Value> {		
+	
+	template <typename Key, typename Value>	struct Up_Base : public Base {		
+		
+		using TypeKey	= Key;
+		using TypeValue = Value;
 
 		DataBase<Key, Value>* database = nullptr;
 
 		Up_Base(DataBase<Key, Value>* db) : database{ db } {
-			std::cout << "UpBase Create\n";			
-		}
+			std::cout << "Up_Base Create\n";			
+		}		
 
-		void add_data(Key key, Value val) override {
-			database->add_data(key, val);
-		}
+		void check(Base* new_data) override {
+			std::cout << "--Check_Derivaive\n";
+			std::cout << typeid(TypeKey).name() << "\n";
+			//support_check(new_data);
+		}		
 
 	};
 
 	Base* data = nullptr;
+	
+	template <typename Key, typename Value> bool add_data(Key key, Value value) {
+				
+		using Up_Base_Type = Up_Base<Key, Value>;
+		Up_Base_Type* ptr = nullptr;
 
-	template <typename Key, typename Value> void add_data(Key key, Value value) {
+		data->check(ptr);		
 
-		std::cout << (data ? "DB: Exist\n" : "DB: NotExist\n");
-		try	{
-			Up_Base<Key, Value>* ptr
-				= dynamic_cast<Up_Base<Key, Value>*>(data);
-
-			std::cout << "Type ptr: " << typeid(ptr).name() << "\n";
-
-			ptr->add_data(key, value);
-
-		}
-		catch (std::exception& exc) {
-			std::cout << exc.what() << "\n";
-		}
+		return false;
 	}
+	//-----------------------------------------------------------------------------------------
 
 public:
-
 	template <typename Key, typename Value>	void set_database(DataBase<Key, Value>* database) {
-
-		std::cout << "DataBase: " << typeid(*database).name() << "\n";	
+				
 		data = new Up_Base{ database };
 	}
 
 	void use() {
-		add_data(std::string{ "Key1" }, std::string{ "Value1" });
+		std::cout << "Try to add data: ";
+		if (add_data(std::string{ "Key1" }, std::string{ "Value1" })) {
+			std::cout << "successfully\n";
+		}
+		else {
+			std::cout << "unsuccessful\n";
+		}
 	}
 
 };
