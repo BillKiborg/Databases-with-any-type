@@ -15,10 +15,21 @@ public:
 //-------------------------------------------------------------------------------
 class User {
 private:
+
+	struct Base_Mixin {	
+		virtual ~Base_Mixin() = default;
+		virtual void compare() = 0;
+	};	
 	
 	struct Base {
 		virtual ~Base() = default;				
-		virtual void check(Base*) = 0;
+		virtual void check(Base_Mixin*) = 0;
+	};
+	
+	template <typename T> struct Mixin : public Base_Mixin {
+		void compare() override {
+			static_cast<T*>(this)->set_type_compare();
+		}
 	};
 	
 	template <typename Key, typename Value>	struct Up_Base : public Base {		
@@ -32,10 +43,9 @@ private:
 			std::cout << "Up_Base Create\n";			
 		}		
 
-		void check(Base* new_data) override {
+		void check(Base_Mixin* mixin) override {
 			std::cout << "--Check_Derivaive\n";
-			std::cout << typeid(TypeKey).name() << "\n";
-			//support_check(new_data);
+			mixin->compare();
 		}		
 
 	};
@@ -44,10 +54,14 @@ private:
 	
 	template <typename Key, typename Value> bool add_data(Key key, Value value) {
 				
-		using Up_Base_Type = Up_Base<Key, Value>;
-		Up_Base_Type* ptr = nullptr;
+		struct Wrapper : public Mixin<Wrapper> {
+			using DataBase_Type1 = Up_Base<Key, Value>;
+			void set_type_compare() {				
+				std::cout << "Compare\n";
+			}
+		};
 
-		data->check(ptr);		
+		data->check(new Wrapper);
 
 		return false;
 	}
