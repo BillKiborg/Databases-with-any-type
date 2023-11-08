@@ -1,74 +1,69 @@
 #include <iostream>
-#include "Templ.h"
-#include <any>
+//#include "DataBase.h"
+#include "User.h"
 #include <type_traits>
 
+template <typename Key, typename Value> class Template_Base {
+public:
+	virtual ~Template_Base() = default;
+	virtual void add_data(Key, Value) = 0;
+};
+
 class Base {
+private:
+	Base* base = nullptr;
 public:
 	virtual ~Base() = default;
-	template <typename Type> Type* get() {
-		return static_cast<Type*>(this);
+	template <typename Key, typename Value> void set(Template_Base<Key, Value>* db) {
+
+	}
+	template <typename Key, typename Value> void add(Key, Value) {
+		auto database = dynamic_cast<Template_Base<Key, Value>*>(base);
+		std::cout << (database ? "База существует\n" : "База не существует\n");
 	}
 };
 
-template <typename Type> struct Up_Base : public Base {
-
-	using DataBase_Type = Up_Base<Type>;
-	using T = Type;
-
-	T get_T() {
-		return T{};
-	}
-	void method() {
-		std::cout << "Method\n";
-	}
-
-	DataBase_Type get_data_type() {
-		return DataBase_Type{};
-	}
-
-};
-
-template <typename Type> void func(Base* base) {
-
-	auto result = static_cast<Type*>(base)->get_data_type();
-	std::cout << "Result: " << typeid(result).name() << "\n";
-}
-
-template <typename SaveType> class Saver {
+class Specific_Base : public Template_Base<std::string, std::string>, public Base {
 private:
-	using Save = SaveType;
+
 public:
-	Saver(SaveType) {
-		std::cout << "Тип: " << typeid(SaveType).name() << " - сохранен\n";
-	};
-	template <typename Type> bool compare(Type) {
-		return typeid(Type) == typeid(SaveType);
+
+	void add_data(std::string, std::string) override {
+		std::cout << "Specific Data\n";
 	}
+
 };
 
-//template <typename Compare> void run()
+class User {
+private:
+	Base* database = nullptr;
 
+public:
+	template <typename Key, typename Value> void set_dataBase(Template_Base<Key, Value>* new_dataBase) {
+		database = dynamic_cast<Base*>(new_dataBase);
+		std::cout << (database ? "База добавлена\n" : "Не удалось добавить базу\n");
+	}
 
+	void use() {
+
+		if (database) {
+			database->add(std::string{ "Key" }, std::string{ "Value" });
+		}
+
+	}
+
+};
 
 int main() {
 	setlocale(LC_ALL, "rus");
 
-	
-	/*Saver saver{ 5 };
-	saver.compare("123");*/
-
-	/*Base* base = new Up_Base<int>;	
-	std::cout << typeid(*base->get<Up_Base<int>>()).name() << "\n";
-	func<Up_Base<int>>(base);*/
-	
-	
-	/*Base* base = new Up_Base<int>;
-	func<Up_Base<int>>(base);*/	
+	User user;
+	user.set_dataBase(new Specific_Base);
+	user.use();
 
 	/*User user;
-	user.set_database(new String_DataBase);
-	user.use();*/
+	user.set_database(new String_DataBase);	
+	user.run();*/
 
 	return 0;
 }

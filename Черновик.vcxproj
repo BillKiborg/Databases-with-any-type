@@ -140,8 +140,12 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Templ.h" />
-    <ClInclude Include="Templ.hpp" />
+    <ClInclude Include="Abstract_DataBase.h" />
+    <ClInclude Include="Abstract_DataBase.hpp" />
+    <ClInclude Include="DataBase.h" />
+    <ClInclude Include="DataBase.hpp" />
+    <ClInclude Include="Template_DataBase.h" />
+    <ClInclude Include="User.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
